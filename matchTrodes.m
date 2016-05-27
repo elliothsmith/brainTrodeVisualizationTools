@@ -7,15 +7,15 @@ function [matchedTrodes] = matchTrodes(centroidCoords,trodeNames)
 % just use electrodes from a previous step of the pipeline.
 
 
+%% this section isn't formulated correctly. Trodes vs. contacts do
+% %% check whether the number of localized electrodes matches the number of electrodes. 
+% if ~isequal(size(centroidCoords,1),length(trodeNames))
+%     display(sprintf('BEWARE! The number of contacts doesn"t match the number of contact names.'))
+%     % could ge the pipeline to try and remove distal contacts from
+%     % electrodes that don't match with trode names. 
+% end
 
-%% check whether the number of localized electrodes matches the number of electrodes. 
-if ~isequal(size(centroidCoords1),length(contactNames))
-    display(sprintf('BEWARE! The number of contacts doesn"t match the number of contact names.'))
-    % could ge the pipeline to try and remove distal contacts from
-    % electrodes that don't match with trode names. 
-end
-
-% for initial testing
+%% for initial testing
 load('CU49Centroids.mat')
 centroidCoords = CentroidCoordinates;
 trodeNames = {'1','2','3','4','5','6','7','8','9','10','11','12'};
@@ -25,16 +25,16 @@ numElecs = length(trodeNames);
 
 
 %% [20160302] reduce data on the sagittal axis and do k-means in 2-D
-[idx,C] = kmeans(centroidCoords(:,[1 3]),numElecs);
+C = clusterdata(centroidCoords,1.5);
 % make color map
-cMap = distinguishable_colors(numElecs);
+cMap = distinguishable_colors(max(C));
 
 % visualizing contacts and K-means
 figure
 hold on
 % looping over contacts
 for cnt = 1:size(centroidCoords,1)
-    scatter(centroidCoords(cnt,1),centroidCoords(cnt,3),100,cMap(idx(cnt),:),'.')
+    scatter3(centroidCoords(cnt,1),centroidCoords(cnt,2),centroidCoords(cnt,3),100,cMap(C(cnt),:),'.')
 end
 
 % looping over K-means and plotting each mean index as a number.
@@ -52,6 +52,8 @@ elseif strcmp(corFlag,'n')
     redoFlag = input(sprintf('So the k-means didn"t work right off the bat... \nIt is a probabilistic method, so it might work if we try again. \ndo you want to try again? [Y/n]'),'s');
     if strcmp(redoFlag,'Y')
         [matchedTrodes] = matchTrodes(centroidCoords,trodeNames);
+    else
+        error('try again perhaps.')
     end
 end
 % if K-means don't work try doing some 3-D clustering or more supervized electrode finding. 

@@ -1,10 +1,11 @@
-function [] = plotFreeSurf(surfPath,surfName,alpha)
+function [] = plotFreeSurf(surfPath,surfName,hemisphere,alpha)
 % PLOTFREESURF plots a freesurfer surface in matlab.
-%   plotFreeSurf(surfFile,alpha) will plot the surface in [surfName] with
-%   the transparncy value in [alpha].
+%   plotFreeSurf(surfFile,alpha) will plot the [hemisphere] of surface in 
+%       [surfName] with the transparncy value in [alpha].
 %
 %   example inputs: surfPath = '/Volumes/MacintoshHD/FreesurferSubjects/C4/surf/';
 %                   surfName = 'smoothwm'
+%                   hemisphere = 'both' [other options are 'lh' or 'rh']
 %                   alpha = 0.4;
 %
 
@@ -12,8 +13,20 @@ function [] = plotFreeSurf(surfPath,surfName,alpha)
 figure('Color',[0 0 0]);
 hold on
 
+if strcmp(hemisphere,'both')
+    hms = 1:2;
+elseif strcmp(hemisphere,'rh')
+    hms = 1;
+elseif strcmp(hemisphere,'lh')
+    hms = 2;
+else
+    display('unrecognized option for [hemisphere]. Plotting both hemispheres')
+    hms = 1:2;
+end
+    
+    
 % looping over hemispheres.
-for hmsphr = 1:2
+for hmsphr = hms
     switch hmsphr
         case 1
             surface = [surfPath 'rh.' surfName];
@@ -26,8 +39,8 @@ for hmsphr = 1:2
     
     % plot surface on black background.
     p=patch('faces',F,'vertices',V, 'facecolor', 'flat',  'edgecolor', 'none', 'facealpha', alpha);
-    facecolor = repmat([1 1 1], length(F), 1);
-    set(p,'FaceVertexCData',facecolor);
+    faceColor = repmat([1 1 1], length(F), 1);
+    set(p,'FaceVertexCData',faceColor);
     
     % adjust view.
     daspect([1 1 1])

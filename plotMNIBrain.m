@@ -11,6 +11,6 @@ function [] = plotMNIBrain(alpha)
 surfPath = '/Volumes/MacintoshHD/Applications/freesurfer/subjects/cvs_avg35_inMNI152/surf/';
 surfName = 'pial';
 
-plotFreeSurf(surfPath,surfName,alpha)
+plotFreeSurf(surfPath,surfName,'both',alpha)
 
 end
